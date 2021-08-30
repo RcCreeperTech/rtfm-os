@@ -1,0 +1,73 @@
+#include "io.h"
+#include "printf.h"
+#include "mailbox.h"
+#include "util.h"
+#include "irq.h"
+#include "timer.h"
+
+void main()
+{
+  uart_init();
+  irq_vtable_init();
+  timer_init();
+  enable_interrupt_controller();
+  enable_irq();
+
+//  asm("svc #69");
+#if 0
+  // get the board's unique serial number with a mailbox call
+  mailbox_buffer[0] = 8*4;                  // length of the message in bytes
+  mailbox_buffer[1] = MBOX_REQUEST;         // this is a request message 0
+
+  mailbox_buffer[2] = MBOX_TAG_GETSERIAL;   // get serial number command
+  mailbox_buffer[3] = 8;                    // buffer size
+  mailbox_buffer[4] = 0;                    // This is the request/response code
+  mailbox_buffer[5] = 0;                    // output top half
+  mailbox_buffer[6] = 0;                    // output lower half
+
+  mailbox_buffer[7] = MBOX_TAG_LAST;
+
+  if(mailbox_call(MBOX_CH_PROP))
+  {
+    uart_puts_sync("My Serial Number is: ");
+    uart_print_hex_dword(mailbox_buffer[6]);
+    uart_print_hex_dword(mailbox_buffer[5]);
+    uart_puts_sync("\r\n");
+  } 
+  else
+  {
+    uart_puts_sync("Unable to query serial number :(\r\n");
+  }
+#elif 0
+  // get the board's unique serial number with a mailbox call
+  mailbox_buffer[0] = 8*4;                  // length of the message in bytes
+  mailbox_buffer[1] = MBOX_REQUEST;         // this is a request message 0
+
+  mailbox_buffer[2] = MBOX_TAG_GETARMMEM;    // get Mem info
+  mailbox_buffer[3] = 8;                    // buffer size
+  mailbox_buffer[4] = 0;                    // This is the request/response code
+  mailbox_buffer[5] = 0;                    // u32 base address
+  mailbox_buffer[6] = 0;                    // u32 size in bytes
+
+  mailbox_buffer[7] = MBOX_TAG_LAST;
+
+  if(mailbox_call(MBOX_CH_PROP))
+  {
+    uart_puts_sync("Arm Memory info: \r\n");
+    uart_puts_sync("Memory base address starts at: ");
+    uart_print_hex_dword(mailbox_buffer[5]);
+    uart_puts_sync("\r\nMemory is: ");
+    uart_print_hex_dword(mailbox_buffer[6]);
+    uart_puts_sync("bytes\r\n");
+  } 
+  else
+  {
+    uart_puts_sync("Unable to query ARM memory info:(\r\n");
+  }
+#else
+  int exception_level = get_el();
+  printf("The system's current exception level is: %d\n", exception_level);
+#endif
+  while(1) uart_update();
+  // while(1) printf("IRQ_STATUS[%X]\n", mmio_read(IRQ0_STATUS0));
+}

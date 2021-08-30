@@ -1,0 +1,7 @@
+build/
+docs/
+reversing/
+vault/
+*.o
+*.img
+*.elf
