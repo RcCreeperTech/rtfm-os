@@ -7,6 +7,7 @@
 #include "mailbox_prop.h"
 #include "framebuffer.h"
 
+#include "v3d_hub.h"
 void main()
 {
   uart_init();
@@ -16,6 +17,13 @@ void main()
   printf("Board Model: Raspberry PI4B 8GB\n");
   int exception_level = get_el();
   printf("The system's current exception level is: %d\n", exception_level);
+
+  printf("V3D Revision: %d.%d.%d.%d\n", 
+        (REGS_V3D_HUB->ident[1] & V3D_HUB_IDENT1_TVER_MASK)  >> V3D_HUB_IDENT1_TVER_SHIFT,
+        (REGS_V3D_HUB->ident[1] & V3D_HUB_IDENT1_REV_MASK)   >> V3D_HUB_IDENT1_REV_SHIFT,
+        (REGS_V3D_HUB->ident[3] & V3D_HUB_IDENT3_IPREV_MASK) >> V3D_HUB_IDENT3_IPREV_SHIFT,
+        (REGS_V3D_HUB->ident[3] & V3D_HUB_IDENT3_IPIDX_MASK) >> V3D_HUB_IDENT3_IPIDX_SHIFT
+        );
 
   mbox_prop_init();
     mbox_prop_add(TAG_GET_MAX_CLOCK_RATE, TAG_CLOCK_ARM);

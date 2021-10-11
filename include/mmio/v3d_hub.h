@@ -56,7 +56,7 @@ typedef struct HubRegs
 
   reg32 res_1[230]; // 0x68 - 0x3fc
   TextureFormatUnit tfu; // 0x400
-  reg32 res_1[767]; // 0x404 - 0x0FFC
+  reg32 res_2[767]; // 0x404 - 0x0FFC
   MMU mmu; // 0x1000
 } HubRegs;
 
